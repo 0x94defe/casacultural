@@ -1,0 +1,19 @@
+# Git
+.git
+.gitignore
+
+# Python locales
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+
+# Variables locales (importante no subirlas a la imagen)
+.env
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml

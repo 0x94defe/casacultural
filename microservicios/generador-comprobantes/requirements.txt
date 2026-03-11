@@ -1,0 +1,5 @@
+flask
+reportlab
+pyodbc
+psycopg2-binary
+pytz
