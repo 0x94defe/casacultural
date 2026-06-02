@@ -3,7 +3,7 @@ from datetime import date, datetime, timezone
 from typing import List, Optional
 from uuid import UUID
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, CORSMiddleware
 from sqlmodel import Field, Session, SQLModel, create_engine, select, text
 
 # 1. CARGA DE CONFIGURACIÓN Y CONEXIÓN
@@ -24,6 +24,22 @@ app = FastAPI(
     # Si estamos en producción (Render), ocultamos la documentación
     docs_url=None if ENVIRONMENT == "production" else "/docs",
     redoc_url=None if ENVIRONMENT == "production" else "/redoc"
+)
+
+# Configuramos los orígenes permitidos
+origins = [
+    "http://localhost:5173",     # Si usas Vite para el frontend local
+    "http://127.0.0.1:5500",     # Si usas Live Server de VS Code
+    "https://tu-proyecto-front.vercel.app", # Tu futura URL de producción en Vercel
+    "*",                         # El comodín '*' permite CUALQUIER origen (útil para desarrollo)
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Por ahora dejamos '*' para que pruebes el HTML desde donde quieras sin trabas
+    allow_credentials=True,
+    allow_methods=["*"], # Permite GET, POST, PATCH, DELETE, etc.
+    allow_headers=["*"], # Permite enviar cualquier cabecera (como tokens de autenticación)
 )
 
 def get_session():
