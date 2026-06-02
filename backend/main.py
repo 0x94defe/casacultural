@@ -9,6 +9,7 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select, text
 # 1. CARGA DE CONFIGURACIÓN Y CONEXIÓN
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
 if not DATABASE_URL:
     raise ValueError("La variable DATABASE_URL no está configurada en el archivo .env")
@@ -17,9 +18,12 @@ if not DATABASE_URL:
 engine = create_engine(DATABASE_URL, echo=False, pool_pre_ping=True)
 
 app = FastAPI(
-    title="API Sistema de Gestión del Club",
+    title="Sistema de Gestión de la Casa Cultural",
     description="Backend en FastAPI y SQLModel conectado a Supabase",
     version="1.0.0"
+    # Si estamos en producción (Render), ocultamos la documentación
+    docs_url=None if ENVIRONMENT == "production" else "/docs",
+    redoc_url=None if ENVIRONMENT == "production" else "/redoc"
 )
 
 def get_session():
