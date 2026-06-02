@@ -20,7 +20,7 @@ engine = create_engine(DATABASE_URL, echo=False, pool_pre_ping=True)
 app = FastAPI(
     title="Sistema de Gestión de la Casa Cultural",
     description="Backend en FastAPI y SQLModel conectado a Supabase",
-    version="1.0.0"
+    version="1.0.0",
     # Si estamos en producción (Render), ocultamos la documentación
     docs_url=None if ENVIRONMENT == "production" else "/docs",
     redoc_url=None if ENVIRONMENT == "production" else "/redoc"
