@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Prueba Casa Cultural</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        .card { background: #f4f4f9; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #0070f3; }
+        .status { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>Casa Cultural - Prueba de Conexión</h1>
+    <p>Estado del Backend: <span id="backend-status">Cargando...</span></p>
+
+    <div id="personas-container">
+        <h3>Lista de Personas desde la API:</h3>
+        <ul id="lista-personas"></ul>
+    </div>
+
+    <script>
+        // CAMBIA ESTA URL POR TU URL REAL DE RENDER (sin la barra final)
+        const BACKEND_URL = "https://casacultural-backend.onrender.com";
+
+        // 1. Probar el Healthcheck del Backend
+        fetch(`${BACKEND_URL}/healthz`)
+            .then(response => response.json())
+            .then(data => {
+                const statusSpan = document.getElementById("backend-status");
+                statusSpan.textContent = `${data.status} (DB ${data.database})`;
+            })
+            .catch(error => {
+                document.getElementById("backend-status").textContent = "Error al conectar con el servidor";
+                document.getElementById("backend-status").style.color = "red";
+                console.error("Error:", error);
+            });
+
+        // 2. Traer la lista de personas
+        fetch(`${BACKEND_URL}/core/personas`)
+            .then(response => response.json())
+            .then(personas => {
+                const lista = document.getElementById("lista-personas");
+                if (personas.length === 0) {
+                    lista.innerHTML = "<li>No hay personas registradas aún.</li>";
+                    return;
+                }
+                personas.forEach(p => {
+                    const li = document.createElement("li");
+                    // Mostramos el campo calculado trimeado por Postgres
+                    li.textContent = `${p.nombre_completo || 'Sin nombre'} (DNI: ${p.dni || 'N/C'})`;
+                    lista.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Error al traer personas:", error));
+    </script>
+</body>
+</html>
