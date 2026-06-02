@@ -19,19 +19,16 @@ ALLOWED_ORIGINS_STR = os.getenv(
 if not DATABASE_URL:
     raise ValueError("La variable DATABASE_URL no está configurada en el archivo .env")
 
-# Optimizaciones para conexión continua hacia Supabase
 engine = create_engine(DATABASE_URL, echo=False, pool_pre_ping=True)
 
 app = FastAPI(
     title="Sistema de Gestión de la Casa Cultural",
     description="Backend en FastAPI y SQLModel conectado a Supabase",
     version="1.0.0",
-    # Si estamos en producción (Render), ocultamos la documentación
     docs_url=None if ENVIRONMENT == "production" else "/docs",
     redoc_url=None if ENVIRONMENT == "production" else "/redoc"
 )
 
-# Configuramos los orígenes permitidos
 origins = [origin.strip() for origin in ALLOWED_ORIGINS_STR.split(",") if origin.strip()]
 app.add_middleware(
     CORSMiddleware,
@@ -45,10 +42,8 @@ def get_session():
     with Session(engine) as session:
         yield session
 
-# ------------------------------------------------------------------------------
-# 2. MODELOS DE SQLMODEL (Mapeo de Esquemas y Tablas)
-# ------------------------------------------------------------------------------
 
+# 2. MODELOS DE SQLMODEL (Mapeo de Esquemas y Tablas)
 # === ESQUEMA: LOOKUPS ===
 class OrigenesCobro(SQLModel, table=True):
     __tablename__ = "origenes_de_cobro"
@@ -64,7 +59,7 @@ class TiposPago(SQLModel, table=True):
 
 class Nacionalidad(SQLModel, table=True):
     __tablename__ = "nacionalidad"
-    __table_args__ = {"schema": "core"}  # Nota: En tu DDL indicaste que Nacionalidad y Ciudad están en core
+    __table_args__ = {"schema": "core"}
     id: Optional[int] = Field(default=None, primary_key=True)
     descripcion: str
 
@@ -77,7 +72,6 @@ class Ciudad(SQLModel, table=True):
 
 # === ESQUEMA: CORE ===
 class PersonasBase(SQLModel):
-    # Usamos 'alias' para mapear el nombre real de la columna en Postgres
     dni: Optional[int] = None
     nombre_fisico: Optional[str] = Field(default=None, max_length=48, alias="__nombre")
     apellido_fisico: Optional[str] = Field(default=None, max_length=48, alias="__apellido")
@@ -91,7 +85,6 @@ class PersonasBase(SQLModel):
     nacionalidad: Optional[int] = None
     genero: Optional[str] = Field(default=None, max_length=1)
 
-    # Configuración crucial para que Pydantic acepte los aliases al leer y escribir JSONs
     model_config = {
         "populate_by_name": True
     }
@@ -126,7 +119,6 @@ class Personas(PersonasBase, table=True):
     domicilio_completo: Optional[str] = None
 
 class PersonasUpdate(SQLModel):
-    # Campos permitidos para actualización (replicamos los nuevos nombres con sus alias)
     celular_fisico: Optional[str] = None
     domicilio_fisico: Optional[str] = None
     email_fisico: Optional[str] = None
@@ -134,7 +126,6 @@ class PersonasUpdate(SQLModel):
     observaciones_fisico: Optional[str] = None
 
 class PersonasUpdate(SQLModel):
-    # Campos permitidos para actualización
     __celular: Optional[str] = None
     __domicilio: Optional[str] = None
     __email: Optional[str] = None
@@ -205,10 +196,7 @@ class Grupos(SQLModel, table=True):
     esFamilia: bool = False
 
 
-# ------------------------------------------------------------------------------
 # 3. ENDPOINTS API REST
-# ------------------------------------------------------------------------------
-
 # === SISTEMA / HEALTHCHECK ===
 @app.get("/healthz", status_code=200, tags=["Sistema"])
 def health_check(session: Session = Depends(get_session)):
@@ -243,7 +231,7 @@ def listar_ciudades(session: Session = Depends(get_session)):
     return session.exec(select(Ciudad)).all()
 
 
-# === ENTIDAD: PERSONAS (Append-Only / Actualización Parcial) ===
+# === ENTIDAD: PERSONAS (Solo Lectura / Append-Only) ===
 @app.post("/core/personas", response_model=Personas, status_code=201, tags=["Personas"])
 def crear_persona(persona: Personas, session: Session = Depends(get_session)):
     session.add(persona)
@@ -279,7 +267,7 @@ def actualizar_persona(persona_id: int, persona_data: PersonasUpdate, session: S
     return db_persona
 
 
-# === ENTIDAD: SOCIOS (Filtros de Activos / Actualización Parcial) ===
+# === ENTIDAD: SOCIOS (Filtros de Activos / Actualizacion Parcial) ===
 @app.post("/core/socios", response_model=Socios, status_code=201, tags=["Socios"])
 def crear_socio(socio: Socios, session: Session = Depends(get_session)):
     session.add(socio)

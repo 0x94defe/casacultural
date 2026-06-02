@@ -9,15 +9,17 @@ El sistema utiliza una arquitectura robusta que incluye:
 * **Infraestructura:** Todo el ecosistema está contenedorizado bajo Docker para un despliegue rápido y consistente.
 
 > [!NOTE]
-> **Estado en Producción**
+> **Estado del Despliegue: **
 > Esta plataforma está siendo utilizada activamente por la **Casa Cultural UVAyJ**.
 > * **Institución:** [Instagram UVAyJ](https://www.instagram.com/casacultural.uvayj/)
 > * **Plataforma en vivo:** [Enlace de Acceso](https://bok-unenraptured-bridgett.ngrok-free.dev/)
 
 > [!WARNING]
-> **Información de Despliegue e Infraestructura**
+> **Información de Infraestructura: **
 > Dado que el proyecto se encuentra en **integración continua**, actualmente no se dispone de un dominio propio. El sistema se está migrando para utilizar **Render** y **Supabase** bajo un subdominio temporal.
-
+> Puede revisar los avances en:
+> * **Backend:** [API Rest](https://casacultural-backend.onrender.com/docs)
+> * **Frontend:** [Punto de Entrada](https://casacultural-uvayj.onrender.com/)
 ---
 
 ### 📦 Módulos del Sistema
