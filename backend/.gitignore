@@ -1,0 +1,8 @@
+# Ignorar el archivo de variables de entorno locales
+.env
+*.bat
+
+# Ignorar archivos temporales de Python
+__pycache__/
+*.pyc
+.venv/
