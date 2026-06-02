@@ -10,6 +10,10 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select, text
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+ALLOWED_ORIGINS_STR = os.getenv(
+    "ALLOWED_ORIGINS", 
+    "http://localhost:5173,http://127.0.0.1:5500,http://localhost:3000"
+)
 
 if not DATABASE_URL:
     raise ValueError("La variable DATABASE_URL no está configurada en el archivo .env")
@@ -27,19 +31,13 @@ app = FastAPI(
 )
 
 # Configuramos los orígenes permitidos
-origins = [
-    "http://localhost:5173",     # Si usas Vite para el frontend local
-    "http://127.0.0.1:5500",     # Si usas Live Server de VS Code
-    "https://tu-proyecto-front.vercel.app", # Tu futura URL de producción en Vercel
-    "*",                         # El comodín '*' permite CUALQUIER origen (útil para desarrollo)
-]
-
+origins = [origin.strip() for origin in ALLOWED_ORIGINS_STR.split(",") if origin.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Por ahora dejamos '*' para que pruebes el HTML desde donde quieras sin trabas
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], # Permite GET, POST, PATCH, DELETE, etc.
-    allow_headers=["*"], # Permite enviar cualquier cabecera (como tokens de autenticación)
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 def get_session():
