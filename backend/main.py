@@ -3,7 +3,8 @@ from datetime import date, datetime, timezone
 from typing import List, Optional
 from uuid import UUID
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, Query, CORSMiddleware
+from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Field, Session, SQLModel, create_engine, select, text
 
 # 1. CARGA DE CONFIGURACIÓN Y CONEXIÓN
