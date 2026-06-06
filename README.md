@@ -1,6 +1,6 @@
 # Proyecto Achiras
 
-Este es el repositorio central del ecosistema **Achiras**, una solución integral diseñada para la gestión de socios, cobros y actividades culturales.
+Este es el repositorio central de una solucion AMS (Association Management Software), una solución integral diseñada para la gestión de socios, cobros, actividades culturales, entre otras.
 
 El sistema utiliza una arquitectura robusta que incluye:
 * **Base de Datos:** Centralizada para la persistencia de datos de socios y finanzas.
@@ -9,14 +9,14 @@ El sistema utiliza una arquitectura robusta que incluye:
 * **Infraestructura:** Todo el ecosistema está contenedorizado bajo Docker para un despliegue rápido y consistente.
 
 > [!NOTE]
-> **Estado del Despliegue: **
-> Esta plataforma está siendo utilizada activamente por la **Casa Cultural UVAyJ**.
+> Esta plataforma está siendo utilizada activamente por la ***Casa Cultural UVAyJ***.
 > * **Institución:** [Instagram UVAyJ](https://www.instagram.com/casacultural.uvayj/)
 > * **Plataforma en vivo:** [Enlace de Acceso](https://bok-unenraptured-bridgett.ngrok-free.dev/)
 
 > [!WARNING]
-> **Información de Infraestructura: **
-> Dado que el proyecto se encuentra en **integración continua**, actualmente no se dispone de un dominio propio. El sistema se está migrando para utilizar **Render** y **Supabase** bajo un subdominio temporal.
+> El sistema se encuentra en proceso de migración desde ejecución local hacia infraestructura en la nube.
+> Actualmente se utiliza Render para el despliegue del frontend y backend, y Supabase como servicio de base de datos.
+>
 > Puede revisar los avances en:
 > * **Backend:** [API Rest](https://casacultural-backend.onrender.com/docs)
 > * **Frontend:** [Punto de Entrada](https://casacultural-uvayj.onrender.com/)
