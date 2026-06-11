@@ -18,7 +18,7 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago_Excepcional(@json NVARCHAR(MAX
 			    fecha_hora_pago DATETIME PRIMARY KEY CHECK (CAST(fecha_hora_pago AS DATE) <= CAST(GETDATE() AS DATE)),
 			    medio_pago TINYINT NOT NULL,
 				origen_carga TINYINT NOT NULL,
-				comentario VARCHAR(128) NOT NULL CHECK (LEN(TRIM(comentario) > 3)
+				comentario VARCHAR(128) NOT NULL CHECK (LEN(TRIM(comentario)) > 3)
 			);
 
 			DROP TABLE IF EXISTS #Detalle_Pago;
@@ -27,7 +27,7 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago_Excepcional(@json NVARCHAR(MAX
 				nro_socio INT NOT NULL CHECK (nro_socio > 0),
 				periodo DATE NOT NULL CHECK (DAY(periodo) = 1),
 				monto DECIMAL(8,2) NOT NULL CHECK (monto >= 0),
-				comentario VARCHAR(128) NOT NULL CHECK (LEN(TRIM(comentario) > 3),
+				comentario VARCHAR(128) NOT NULL CHECK (LEN(TRIM(comentario)) > 3),
 
 				PRIMARY KEY (nro_socio, periodo)
 			);
@@ -118,10 +118,10 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago_Excepcional(@json NVARCHAR(MAX
 				DECLARE @ultimoPeriodo TABLE (nro_socio INT PRIMARY KEY, periodo_no_pago DATE);
 			   	INSERT INTO @ultimoPeriodo(nro_socio, periodo_no_pago)
 			   	SELECT
-			   		pp.nro_socio,
-			   		DATEADD(MONTH, 1, MAX(dp.periodo_pagado))
-			   	FROM core.Detalles_del_Pago dp 
-			   	WHERE dp.nro_socio IN (SELECT nro_socio FROM @primerPeriodo)
+			   		nro_socio,
+			   		DATEADD(MONTH, 1, MAX(periodo_pago))
+			   	FROM core.Detalles_del_Pago  
+			   	WHERE nro_socio IN (SELECT nro_socio FROM @primerPeriodo)
 			   	GROUP BY nro_socio;
 
 				IF EXISTS (
@@ -129,17 +129,17 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago_Excepcional(@json NVARCHAR(MAX
 				    FROM @ultimoPeriodo up
 				    JOIN @primerPeriodo pp
 				    ON pp.nro_socio = up.nro_socio
-				    WHERE pp.periodo <> up.periodo_no_pago
+				    WHERE pp.primer_periodo <> up.periodo_no_pago
 				 )
 				 BEGIN
 				 	SELECT
 				 		up.nro_socio,
 				 		up.periodo_no_pago AS periodo_esperado,
-				 		pp.periodo AS periodo_recibido
+				 		pp.primer_periodo AS periodo_recibido
 				 	FROM @ultimoPeriodo up
 				 	JOIN @primerPeriodo pp
 				 	ON pp.nro_socio = up.nro_socio
-				 	WHERE pp.periodo <> up.periodo_no_pago
+				 	WHERE pp.primer_periodo <> up.periodo_no_pago;
 
 					THROW 50001, '[ERROR] Hay un error en la validacion de cuotas para pagar', 1;
 				 END
