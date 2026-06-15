@@ -12,14 +12,17 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago(@json NVARCHAR(MAX)) AS
 
 		--creacion tablas
 			DROP TABLE IF EXISTS #Pago;
-		  	CREATE TABLE #Pago( --singleton
+		  	CREATE TABLE #Pago
+		  	( --singleton
 		  		apellido_nombre_origen NVARCHAR(80) CHECK (LEN(TRIM(apellido_nombre_origen)) > 2),
 			    fecha_hora_pago DATETIME PRIMARY KEY CHECK (CAST(fecha_hora_pago AS DATE) <= CAST(GETDATE() AS DATE)),
 			    medio_pago TINYINT NOT NULL,
-				origen_carga TINYINT NOT NULL
+				origen_carga TINYINT NOT NULL,
+				comentario VARCHAR(128) NOT NULL CHECK (LEN(TRIM(comentario)) > 3)
 			 );
 			DROP TABLE IF EXISTS #Detalle_Pago;
-			CREATE TABLE #Detalle_Pago(
+			CREATE TABLE #Detalle_Pago
+			(
 				nro_socio INT PRIMARY KEY,
 				deuda DECIMAL(19,2) NOT NULL CHECK (deuda >= 0) DEFAULT (0),
 				cant_cuotas INT NOT NULL CHECK (cant_cuotas > 0)
@@ -32,12 +35,14 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago(@json NVARCHAR(MAX)) AS
 					dbo.fn_capitalize(TRIM(j1.apellido_nombre_origen)),
 					j1.fecha_hora_pago, ---estoy seguro que se manda bien.. es por budibase frontend
 					j1.medio_pago, ---estoy seguro que se manda bien.. es por budibase frontend
-					j1.origen_carga ---estoy seguro que se manda bien.. es por budibase frontend
+					j1.origen_carga, ---estoy seguro que se manda bien.. es por budibase frontend
+					j1.comentario
 				FROM OPENJSON(@json) WITH (
 					apellido_nombre_origen NVARCHAR(80),
 					fecha_hora_pago DATETIME,
 					medio_pago TINYINT,
-					origen_carga TINYINT
+					origen_carga TINYINT,
+					comentario VARCHAR(128)
 				 ) AS j1;
 
 				INSERT INTO #Detalle_Pago(nro_socio, cant_cuotas)
@@ -155,13 +160,14 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago(@json NVARCHAR(MAX)) AS
 				-- inserto a tabla Pagos
 					DECLARE @monto_total DECIMAL(19,2) = (SELECT SUM(cant_cuotas) * @ValorCuotaDeEseMomento FROM #Detalle_Pago);
 
-					INSERT INTO core.Pagos(fecha_hora_pago, id_persona_pagadora, medio_pago, origen_carga, monto_pagado_real)
+					INSERT INTO core.Pagos(fecha_hora_pago, id_persona_pagadora, medio_pago, origen_carga, monto_pagado_real, comentario)
 					SELECT 
 						fecha_hora_pago,
 						@id_persona_pagadora,
 						medio_pago,
 						origen_carga,
-						@monto_total
+						@monto_total,
+						comentario
 					FROM #Pago;
 
 					DECLARE @id_pago_generado INT = SCOPE_IDENTITY();
