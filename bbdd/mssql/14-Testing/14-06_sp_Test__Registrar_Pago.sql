@@ -9,6 +9,7 @@ CREATE OR ALTER PROCEDURE internal.sp_Test_Registrar__Pago(@esCasoLimite BIT = 0
 					"fecha_hora_pago": "2025-01-20T22:22:22Z",
 					"medio_pago": 1,
 					"origen_carga": 1,
+					"comentario": "Pago meses normales",
 					"detalles_pago": [
 						{
 							"nro_socio": 505,
@@ -30,6 +31,7 @@ CREATE OR ALTER PROCEDURE internal.sp_Test_Registrar__Pago(@esCasoLimite BIT = 0
 					"fecha_hora_pago": "2025-01-20",
 					"medio_pago": 1,
 					"origen_carga": 1,
+					"comentario": "Pago meses normales",
 					"detalles_pago": [
 						{
 							"nro_socio": 199,
