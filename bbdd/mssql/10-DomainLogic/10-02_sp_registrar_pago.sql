@@ -30,7 +30,7 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago(@json NVARCHAR(MAX)) AS
 
 		BEGIN TRY
 			--parse de json
-				INSERT INTO #Pago(apellido_nombre_origen, fecha_hora_pago, medio_pago, origen_carga)
+				INSERT INTO #Pago(apellido_nombre_origen, fecha_hora_pago, medio_pago, origen_carga, comentario)
 				SELECT 
 					dbo.fn_capitalize(TRIM(j1.apellido_nombre_origen)),
 					j1.fecha_hora_pago, ---estoy seguro que se manda bien.. es por budibase frontend
