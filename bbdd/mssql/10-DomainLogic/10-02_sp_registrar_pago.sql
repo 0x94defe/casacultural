@@ -53,7 +53,16 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago(@json NVARCHAR(MAX)) AS
 					nro_socio INT,
 					cant_cuotas INT
 				 ) AS j2;
-			
+
+			--validamos que la fecha del pago pertenezca al periodo actual del server
+				IF EXISTS (
+					SELECT 1
+					FROM #Pago
+					WHERE YEAR(fecha_hora_pago) <> YEAR(GETDATE())
+					   OR MONTH(fecha_hora_pago) <> MONTH(GETDATE())
+				)
+					THROW 50001, '[ERROR] La fecha del pago debe pertenecer al mes actual.', 1;
+
 			--validamos si existen los lookups
 				IF NOT EXISTS (SELECT 1 FROM lookups.Origenes_de_Cobro oc 
 							  JOIN #Pago p ON p.origen_carga = oc.id)
