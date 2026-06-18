@@ -18,7 +18,7 @@ CREATE OR ALTER PROCEDURE core.sp_Registrar__Pago(@json NVARCHAR(MAX)) AS
 			    fecha_hora_pago DATETIME PRIMARY KEY CHECK (CAST(fecha_hora_pago AS DATE) <= CAST(GETDATE() AS DATE)),
 			    medio_pago TINYINT NOT NULL,
 				origen_carga TINYINT NOT NULL,
-				comentario VARCHAR(128) NOT NULL CHECK (LEN(TRIM(comentario)) > 3)
+				comentario VARCHAR(128) CHECK (LEN(TRIM(comentario)) > 3)
 			 );
 			DROP TABLE IF EXISTS #Detalle_Pago;
 			CREATE TABLE #Detalle_Pago
